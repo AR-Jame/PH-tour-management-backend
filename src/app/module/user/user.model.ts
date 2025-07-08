@@ -32,7 +32,6 @@ const userSchema = new Schema<IUser>({
     },
     role: {
         type: String,
-        // enum: ['SUPER_ADMIN', "ADMIN", 'GUIDE']
         enum: Object.values(Role),
         default: Role.USER
     },
@@ -51,7 +50,6 @@ const userSchema = new Schema<IUser>({
     },
     isActive: {
         type: String,
-        // enum: ['ACTIVE', "INACTIVE", "BLOCKED"],
         enum: Object.values(IsActive),
         default: IsActive.ACTIVE
     },
