@@ -1,6 +1,8 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors'
 import { router } from './routes';
+import { globalErrorHandler } from './app/middlewares/globalErrorHandler';
+import notFound from './app/middlewares/notFound';
 
 const app = express();
 
@@ -10,8 +12,13 @@ app.use(cors());
 app.use("/api/v1", router);
 
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
     res.send('Alhamdulillah, app is running')
 })
+
+
+app.use(globalErrorHandler)
+
+app.use(notFound)
 
 export default app
