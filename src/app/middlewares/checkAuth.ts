@@ -12,6 +12,8 @@ export const checkAuth = (...authRoles: string[]) => (req: Request, res: Respons
 
     const verifyToken = jwt.verify(accessToken, envVars.JWT_ACCESS_SECRET) as JwtPayload;
 
+    req.user = verifyToken
+
     if (!authRoles.includes(verifyToken.role)) {
         throw new AppError(401, "You get an 401 error")
     }
