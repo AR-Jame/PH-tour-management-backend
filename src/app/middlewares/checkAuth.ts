@@ -15,6 +15,8 @@ export const checkAuth = (...authRoles: string[]) => (req: Request, res: Respons
 
     req.user = verifyToken
 
+    console.log(verifyToken);
+
     if (!authRoles.includes(verifyToken.role)) {
         throw new AppError(401, "You get an 401 error")
     }

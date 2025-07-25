@@ -6,6 +6,9 @@ import { StatusCodes } from "http-status-codes";
 import { AuthServices } from "./auth.service";
 import AppError from "../../errorHelper/AppError";
 import { setAuthCookie } from "../../utils/setCookie";
+import { JwtPayload } from "jsonwebtoken";
+import { createUserTokens } from "../../utils/userTokens";
+import { envVars } from "../../config/env";
 
 const credentialsLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
@@ -74,7 +77,7 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
         throw new AppError(StatusCodes.BAD_REQUEST, "Password not found")
     }
 
-    const resetPassword = await AuthServices.resetPassword(decodedToken, oldPassword, newPassword);
+    const resetPassword = await AuthServices.resetPassword(decodedToken as JwtPayload, oldPassword, newPassword);
 
 
     sendResponse(res, {
@@ -85,11 +88,29 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
     })
 })
 
+const googleCallback = catchAsync(async (req: Request, res: Response) => {
+
+    const user = req.user;
+    console.log(user);
+
+
+    if (!user) {
+        throw new AppError(StatusCodes.BAD_REQUEST, "User data not found")
+    }
+
+    const tokenInfo = createUserTokens(user)
+
+    setAuthCookie(res, tokenInfo);
+
+    res.redirect(envVars.FRONTEND_URL)
+})
+
 
 
 export const authControllers = {
     credentialsLogin,
     getNewAccessToken,
     logout,
-    resetPassword
+    resetPassword,
+    googleCallback,
 }
