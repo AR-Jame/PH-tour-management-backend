@@ -15,7 +15,7 @@ passport.use(
         async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
             try {
 
-                console.log("From passport config", { accessToken, refreshToken, profile });
+                // console.log("From passport config", { accessToken, refreshToken, profile });
 
                 const email = profile.emails?.[0].value;
 
@@ -23,10 +23,9 @@ passport.use(
                     return done(null, false, { message: "Email does not found." })
                 }
 
-                const isUserExist = await User.findOne({ email: email });
+                let user = await User.findOne({ email: email });
 
-                let user;
-                if (!isUserExist) {
+                if (!user) {
                     user = await User.create({
                         email: email,
                         name: profile.displayName,

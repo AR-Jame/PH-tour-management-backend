@@ -90,19 +90,24 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
 
 const googleCallback = catchAsync(async (req: Request, res: Response) => {
 
+    let redirectTo = req.query.state ? req.query.state as string : "";
+
+    if (redirectTo.startsWith("/")) {
+        redirectTo = redirectTo.slice(1)
+    }
+
     const user = req.user;
-    console.log(user);
-
-
     if (!user) {
         throw new AppError(StatusCodes.BAD_REQUEST, "User data not found")
     }
 
     const tokenInfo = createUserTokens(user)
 
+    console.log({ tokenInfo });
+
     setAuthCookie(res, tokenInfo);
 
-    res.redirect(envVars.FRONTEND_URL)
+    res.redirect(`${envVars.FRONTEND_URL}/${redirectTo}`)
 })
 
 
