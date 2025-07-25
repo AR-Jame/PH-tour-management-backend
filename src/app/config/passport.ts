@@ -1,0 +1,69 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import passport from "passport";
+import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
+import { envVars } from "./env";
+import { User } from "../module/user/user.model";
+import { Role } from "../module/user/user.interface";
+
+passport.use(
+    new GoogleStrategy(
+        {
+            clientID: envVars.GOOGLE_CLIENT_ID,
+            clientSecret: envVars.GOOGLE_CLIENT_SECRET,
+            callbackURL: envVars.GOOGLE_CALLBACK_URL
+        },
+        async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
+            try {
+
+                console.log("From passport config", { accessToken, refreshToken, profile });
+
+                const email = profile.emails?.[0].value;
+
+                if (!email) {
+                    return done(null, false, { message: "Email does not found." })
+                }
+
+                const isUserExist = await User.findOne({ email: email });
+
+                let user;
+                if (!isUserExist) {
+                    user = await User.create({
+                        email: email,
+                        name: profile.displayName,
+                        picture: profile.photos?.[0].value,
+                        role: Role.USER,
+                        isVerified: true,
+                        auths: [
+                            {
+                                provider: 'google',
+                                providerId: profile.id
+                            }
+                        ]
+                    })
+                }
+
+                return done(null, user)
+
+            } catch (error) {
+                console.log("Google strategy error", error);
+                done(error)
+            }
+        }
+    )
+)
+
+
+
+passport.serializeUser((user: any, done) => {
+    done(null, user._id)
+});
+
+passport.deserializeUser(async (id: string, done: any) => {
+    try {
+        const user = await User.findById(id);
+        done(null, user)
+    } catch (error) {
+        console.log(error);
+        done(error)
+    }
+})
