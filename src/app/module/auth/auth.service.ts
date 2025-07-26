@@ -1,47 +1,45 @@
 import AppError from "../../errorHelper/AppError";
-import { IUser } from "../user/user.interface"
 import { User } from "../user/user.model";
 import { StatusCodes } from "http-status-codes";
 import bcryptjs from 'bcryptjs';
-import { createUserTokens } from "../../utils/userTokens";
 import { generateToken, verifyToken } from "../../utils/jwt";
 import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
 import { userPurify } from "../../utils/userPurify";
 
-const credentialsLogin = async (payload: Partial<IUser>) => {
-    const { email, password } = payload;
+// const credentialsLogin = async (payload: Partial<IUser>) => {
+//     const { email, password } = payload;
 
-    const isUserExist = await User.findOne({ email });
+//     const isUserExist = await User.findOne({ email });
 
-    if (!isUserExist) {
-        throw new AppError(StatusCodes.BAD_REQUEST, "Email Does not exist")
-    }
+//     if (!isUserExist) {
+//         throw new AppError(StatusCodes.BAD_REQUEST, "Email Does not exist")
+//     }
 
-    const isPasswordMatch = await bcryptjs.compare(password as string, isUserExist.password as string)
+//     const isPasswordMatch = await bcryptjs.compare(password as string, isUserExist.password as string)
 
-    if (!isPasswordMatch) {
-        throw new AppError(StatusCodes.BAD_REQUEST, "Incorrect Password")
-    }
+//     if (!isPasswordMatch) {
+//         throw new AppError(StatusCodes.BAD_REQUEST, "Incorrect Password")
+//     }
 
-    const userTokenData = {
-        _id: isUserExist._id,
-        email: isUserExist.email,
-        role: isUserExist.role,
+//     const userTokenData = {
+//         _id: isUserExist._id,
+//         email: isUserExist.email,
+//         role: isUserExist.role,
 
-    }
+//     }
 
-    const { accessToken, refreshToken } = createUserTokens(userTokenData)
+//     const { accessToken, refreshToken } = createUserTokens(userTokenData)
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: passcode, ...rest } = isUserExist.toObject(); // for remove mongoose specific fields.
-    return {
-        accessToken,
-        refreshToken,
-        user: rest
-    }
+//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//     const { password: passcode, ...rest } = isUserExist.toObject(); // for remove mongoose specific fields.
+//     return {
+//         accessToken,
+//         refreshToken,
+//         user: rest
+//     }
 
-};
+// };
 
 
 const getNewAccessToken = async (refreshToken: string) => {
@@ -84,7 +82,7 @@ const resetPassword = async (decodedToken: JwtPayload, oldPassword: string, newP
 
 
 export const AuthServices = {
-    credentialsLogin,
+    // credentialsLogin,
     getNewAccessToken,
     resetPassword
 }

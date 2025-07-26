@@ -12,9 +12,7 @@ router.post('/logout', authControllers.logout);
 router.post('/reset-password', checkAuth(...Object.values(Role)), authControllers.resetPassword)
 router.get('/google', (req: Request, res: Response, next: NextFunction) => {
     const redirect = req.query?.redirect || "/";
-    passport.authenticate('google', {
-        scope: ["profile", "email"], state: redirect as string, accessType: 'offline', prompt: 'consent'
-    })(req, res, next);
+    passport.authenticate('google', { scope: ["profile", "email"], state: redirect as string })(req, res, next);
 })
 
 router.get('/google/callback', passport.authenticate("google", { failureRedirect: "/login" }), authControllers.googleCallback)
