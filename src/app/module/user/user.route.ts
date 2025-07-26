@@ -7,7 +7,9 @@ import { Role } from './user.interface';
 
 const router = express.Router();
 
-router.post('/register', zodValidation(createUserZodSchema), userControllers.createUser);
+router.post('/register',
+    zodValidation(createUserZodSchema),
+    userControllers.createUser);
 router.get('/all-user', checkAuth('ADMIN', 'SUPER_ADMIN'), userControllers.getAllUser);
 router.patch('/:id', zodValidation(updateUserZodSchema), checkAuth(...Object.values(Role)), userControllers.updateUser)
 
