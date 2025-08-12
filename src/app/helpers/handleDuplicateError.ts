@@ -3,9 +3,11 @@ import { StatusCodes } from "http-status-codes"
 import { TErrorResponse } from "../interfaces/error.types"
 
 export const handleDuplicateError = (err: any): TErrorResponse => {
-    const matchedArr = err.message.match(/"([^"]*)"/)
+    // const matchedArr = err.message.match(/"([^"]*)"/);
+    const field = Object.keys(err.keyValue)[0];
+    const value = err.keyValue[field];
     return {
         statusCode: StatusCodes.BAD_REQUEST,
-        message: matchedArr[1] + " already exists."
+        message: `${field} ${value} already exists.`
     }
 }
