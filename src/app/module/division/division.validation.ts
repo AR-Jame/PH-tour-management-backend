@@ -7,7 +7,8 @@ export const createDivisionZodSchema = z.object({
         .max(26, { message: "Division must be up to 26 character." }),
     slug: z
         .string({ message: "slug must be string" })
-        .min(8, { message: "Division must be at least 8 character long." }),
+        .min(8, { message: "Division must be at least 8 character long." })
+        .optional(),
     thumbnail: z
         .url({ protocol: /^https$/ })
         .optional(),
