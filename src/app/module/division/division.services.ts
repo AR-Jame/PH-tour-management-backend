@@ -3,6 +3,7 @@ import AppError from "../../errorHelper/AppError";
 import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
 import { Tour } from "../tour/tour.model";
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 
 const createDivision = async (payload: Partial<IDivision>) => {
 
@@ -40,7 +41,7 @@ const getSingleDivision = async (slug: string) => {
 
 const updateDivision = async (id: string, payload: Partial<IDivision>) => {
 
-    // const isDivisionExist = await Division.findOne({ _id: id });
+    const isDivisionExist = await Division.findOne({ _id: id });
 
     // if (!isDivisionExist) {
     //     throw new AppError(StatusCodes.BAD_REQUEST, "Division does not exist.")
@@ -70,6 +71,11 @@ const updateDivision = async (id: string, payload: Partial<IDivision>) => {
     }
 
     const updatedDivision = await Division.findByIdAndUpdate(id, payload, { new: true, runValidators: true })
+
+    if (payload.thumbnail && isDivisionExist?.thumbnail) {
+        await deleteImageFromCloudinary(isDivisionExist.thumbnail)
+    }
+
 
     if (!updatedDivision) {
         throw new AppError(StatusCodes.BAD_REQUEST, "Division does not exist.");
