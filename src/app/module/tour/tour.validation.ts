@@ -115,4 +115,7 @@ export const updateTourZodSchema = z.object({
     tourType: z
         .string({ message: "tour type must be a string." })
         .optional(),
+    deleteImages: z
+        .array(z.string())
+        .optional()
 })
