@@ -4,11 +4,14 @@ import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import { divisionServices } from "./division.services";
 import AppError from "../../errorHelper/AppError";
+import { IDivision } from "./division.interface";
 
 const createDivision = catchAsync(async (req: Request, res: Response) => {
 
-    const payload = req.body
-
+    const payload: IDivision = {
+        ...req.body,
+        thumbnail: req.file?.path
+    }
     const division = await divisionServices.createDivision(payload);
 
     sendResponse(res, {
@@ -16,7 +19,6 @@ const createDivision = catchAsync(async (req: Request, res: Response) => {
         statusCode: StatusCodes.CREATED,
         message: "division created successfully",
         data: division,
-
     })
 })
 const getDivision = catchAsync(async (req: Request, res: Response) => {
@@ -52,7 +54,10 @@ const getSingleDivision = catchAsync(async (req: Request, res: Response) => {
 const updateDivision = catchAsync(async (req: Request, res: Response) => {
 
     const id = req.params.id;
-    const payload = req.body
+    const payload: IDivision = {
+        ...req.body,
+        thumbnail: req.file?.path
+    }
 
     const updatedDivision = await divisionServices.updateDivision(id, payload)
 
