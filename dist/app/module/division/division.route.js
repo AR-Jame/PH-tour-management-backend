@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.divisionRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const division_controller_1 = require("./division.controller");
+const checkAuth_1 = require("../../middlewares/checkAuth");
+const user_interface_1 = require("../user/user.interface");
+const validationRequest_1 = require("../../middlewares/validationRequest");
+const division_validation_1 = require("./division.validation");
+const multer_config_1 = require("../../config/multer.config");
+const router = express_1.default.Router();
+router.post('/create', (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.SUPER_ADMIN), multer_config_1.multerUpload.single("file"), (0, validationRequest_1.zodValidation)(division_validation_1.createDivisionZodSchema), division_controller_1.divisionController.createDivision);
+router.get('/', division_controller_1.divisionController.getDivision);
+router.get('/:slug', division_controller_1.divisionController.getSingleDivision);
+router.patch('/:id', (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.SUPER_ADMIN), multer_config_1.multerUpload.single('file'), (0, validationRequest_1.zodValidation)(division_validation_1.updateDivisionZodSchema), division_controller_1.divisionController.updateDivision);
+router.delete('/:id', (0, checkAuth_1.checkAuth)(user_interface_1.Role.ADMIN, user_interface_1.Role.SUPER_ADMIN), division_controller_1.divisionController.deleteDivision);
+exports.divisionRoutes = router;

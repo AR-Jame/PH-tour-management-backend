@@ -1,27 +1,103 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { StatusCodes } from 'http-status-codes'
 import { userServices } from "./user.service";
+import catchAsync from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
+import { JwtPayload } from "jsonwebtoken";
 
 
-const createUser = async (req: Request, res: Response) => {
-    try {
+const createUser = catchAsync(async (req: Request, res: Response) => {
 
-        const user = await userServices.createUser(req.body);
+    const user = await userServices.createUser(req.body);
 
-        res.status(StatusCodes.CREATED).send({
-            message: 'User created successfully.',
-            user
-        })
+    sendResponse(res, {
+        statusCode: StatusCodes.CREATED,
+        data: user,
+        message: "User created Successfully",
+        success: true
+    })
 
-    } catch (error: any) {
-        console.log(error);
-        res.status(StatusCodes.BAD_REQUEST).json({
-            message: `Something went wrong@ ${error.message}`
-        })
-    }
-}
+})
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+
+    const userId = req.params.id;
+    const verifiedToken = req.user;
+    const payload = req.body;
+
+    const user = await userServices.updateUser(userId, payload, verifiedToken as JwtPayload);
+
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        data: user,
+        message: "User Updated Successfully",
+        success: true
+    })
+
+})
+
+const getMe = catchAsync(async (req: Request, res: Response) => {
+    const userId = (req.user as JwtPayload).id;
+    const user = await userServices.getMe(userId);
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'Profile retrieved successfully.',
+        data: user
+    })
+})
+
+const getSingleUser = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.params.userId;
+    const user = await userServices.getMe(userId);
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'User Details retrieved successfully.',
+        data: user
+    })
+})
+
+const getAllUser = catchAsync(async (req: Request, res: Response) => {
+    const users = await userServices.getAllUser();
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        success: true,
+        message: 'All Users retrieved Successfully',
+        data: users
+    })
+})
 
 export const userControllers = {
-    createUser
+    createUser,
+    updateUser,
+    getAllUser,
+    getMe,
+    getSingleUser
 }
+
+
+// const createUser = async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+
+//         const user = await userServices.createUser(req.body);
+
+//         res.status(StatusCodes.CREATED).send({
+//             message: 'User created successfully.',
+//             user
+//         })
+
+//     } catch (error: any) {
+//         next(error)
+//     }
+// }
+
+// const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         const users = await userServices.getAllUser();
+//         res
+//             .status(StatusCodes.OK)
+//             .send(users)
+//     } catch (error) {
+//         next(error)
+//     }
+// }

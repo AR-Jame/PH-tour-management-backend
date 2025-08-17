@@ -3,6 +3,8 @@ import mongoose from "mongoose"
 import app from "./app"
 import { Server } from 'http'
 import { envVars } from "./app/config/env";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
+import { connectRedis } from "./app/config/redis.config";
 
 let server: Server;
 
@@ -20,7 +22,11 @@ const startServer = async () => {
     }
 }
 
-startServer();
+(async () => {
+    await startServer();
+    await seedSuperAdmin();
+    await connectRedis();
+})();
 
 process.on("SIGTERM", (err) => {
     console.log('SIGTERM signal received. Server shutting down', err);
