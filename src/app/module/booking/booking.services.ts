@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { generateTransactionId } from "../../utils/getTransactionId";
 import { PAYMENT_STATUS } from "../payment/payment.interface";
 import { Payment } from "../payment/payment.model";
 import { ISSLCommrez } from "../sslCommerz/sslCommerz.interface";
@@ -8,11 +9,6 @@ import { SSLServices } from "../sslCommerz/sslCommerz.services";
 import { Tour } from "../tour/tour.model";
 import { BOOKING_STATUS, IBooking } from "./booking.interface";
 import { Booking } from "./booking.model";
-import crypto from 'crypto';
-
-export const generateTransactionId = () => {
-    return `tran-${crypto.randomBytes(10).toString('hex')}`
-}
 
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
 

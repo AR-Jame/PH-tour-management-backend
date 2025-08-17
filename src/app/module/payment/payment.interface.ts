@@ -14,7 +14,7 @@ export interface IPayment {
     booking: Types.ObjectId,
     transactionId: string,
     amount: number,
-    paymentGateway?: any,
+    paymentGatewayData?: any,
     invoice_Url?: string,
     status: PAYMENT_STATUS
 }

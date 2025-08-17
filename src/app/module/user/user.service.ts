@@ -30,6 +30,17 @@ const createUser = async (payload: Partial<IUser>) => {
     return user
 }
 
+const getSingleUser = async (userId: string) => {
+    const user = await User.findById(userId).select('-password')
+    return user
+}
+
+const getMe = async (userId: string) => {
+
+    const user = await User.findById(userId).select('-password');
+
+    return user
+}
 const getAllUser = async () => {
     const users = await User.find({});
     return users
@@ -38,6 +49,17 @@ const getAllUser = async () => {
 const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
 
     const ifUserExist = await User.findById({ _id: userId })
+
+    if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
+
+        if (userId !== decodedToken.userId) {
+            throw new AppError(401, "You are not authorized.")
+        }
+    }
+
+    if (decodedToken.role === Role.ADMIN && ifUserExist?.role === Role.SUPER_ADMIN) {
+        throw new AppError(401, "You are not authorized.")
+    }
 
     if (!ifUserExist) {
         throw new AppError(StatusCodes.NOT_FOUND, "User does not exist");
@@ -61,10 +83,6 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
         }
     }
 
-    if (payload.password) {
-        payload.password = await bcryptjs.hash(payload.password, envVars.BCRYPT_SALT_ROUND);
-    }
-
     const newUpdatedUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true })
 
     return newUpdatedUser
@@ -74,5 +92,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
 export const userServices = {
     createUser,
     getAllUser,
-    updateUser
+    updateUser,
+    getMe,
+    getSingleUser
 }

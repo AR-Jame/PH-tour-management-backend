@@ -30,7 +30,7 @@ const getDivision = catchAsync(async (req: Request, res: Response) => {
         statusCode: StatusCodes.OK,
         message: "division retrieved successfully",
         data: data.data,
-        meta: data.meta
+        // meta: data.meta
 
     })
 })
